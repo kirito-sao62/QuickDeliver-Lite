@@ -9,11 +9,7 @@
             <div class="card-body p-4">
                 <h3 class="card-title text-center mb-4 fw-bold">Login</h3>
                 
-                {% if error %}
-                <div class="alert alert-danger text-center" role="alert">
-                    {{ error }}
-                </div>
-                {% endif %}
+                {# The flash message system in base.html now handles all alerts, so the specific error block below is removed. #}
                 
                 <form method="POST" action="{{ url_for('login') }}">
                     <div class="mb-3">

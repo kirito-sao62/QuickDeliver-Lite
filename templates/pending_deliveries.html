@@ -3,22 +3,20 @@
 {% block title %}Pending Delivery Requests{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Pending Delivery Requests</h2>
+<h2 class="mb-4">Pending Delivery Requests</h2>
 
-    {% if pending_deliveries %}
+{% if pending_deliveries %}
+<div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
-        <thead>
+        <thead class="table-light">
             <tr>
-                <th>Customer Email</th>
+                <th>Customer</th>
                 <th>Pickup Address</th>
                 <th>Dropoff Address</th>
                 <th>Package Note</th>
-                <th>Timestamp</th>
-                <th>Details</th>
-                {% if session.get('role') == 'driver' %}
+                <th>Created On</th>
+                <th>Status</th>
                 <th>Action</th>
-                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -30,26 +28,24 @@
                 <td>{{ delivery.package_note }}</td>
                 <td>{{ format_timestamp(delivery.timestamp) }}</td>
                 <td>
-                    <span class="status-{{ delivery.status | lower | replace(' ', '-') }}">
+                    <span class="status-badge status-{{ delivery.status | lower | replace(' ', '-') }}">
                         {{ delivery.status }}
                     </span>
-                </td> {# Add this td for status #}
-                <td> {# Show View Details link only for drivers or for the customer who created the delivery #}
-                    {% if session.get('role') == 'driver' or (session.get('role') == 'customer' and delivery.customer_email == session.get('email')) %}
-                    <a href="{{ url_for('delivery_details', delivery_id=delivery.id) }}" class="btn btn-info btn-sm">View Details</a>
+                </td>
+                <td>
+                    <a href="{{ url_for('delivery_details', delivery_id=delivery.id) }}" class="btn btn-info btn-sm">Details</a>
+                    {% if session.get('role') == 'driver' and delivery.status == 'Pending' %}
+                    <a href="{{ url_for('accept_delivery', delivery_id=delivery.id) }}" class="btn btn-success btn-sm ms-1">Accept</a>
                     {% endif %}
                 </td>
-                {% if session.get('role') == 'driver' and delivery.status == 'Pending' %}
-                <td>
-                    <a href="{{ url_for('accept_delivery', delivery_id=delivery.id) }}" class="btn btn-success btn-sm">Accept</a>
-                </td>
-                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    {% else %}
-    <p>No pending delivery requests found.</p>
-    {% endif %}
 </div>
+{% else %}
+<div class="alert alert-info text-center" role="alert">
+    No pending delivery requests found.
+</div>
+{% endif %}
 {% endblock %}
