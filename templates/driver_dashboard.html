@@ -1,0 +1,15 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Driver Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2>Welcome to the Driver Dashboard!</h2>
+            <p>This is the driver-specific content.</p>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
