@@ -20,6 +20,7 @@
                     <th>Status</th>
                     <th>Accepted On</th>
                     <th>Assigned Driver</th>
+                    <th>Details</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,6 +34,9 @@
                     <td>{{ delivery.status }}</td>
                     <td>{{ format_timestamp(delivery.timestamp) }}</td>
                     <td>{{ delivery.assigned_driver }}</td>
+                    <td>
+                        <a href="{{ url_for('delivery_details', delivery_id=delivery.id) }}" class="btn btn-info btn-sm">View Details</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>

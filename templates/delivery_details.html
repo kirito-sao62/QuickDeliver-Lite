@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Delivery Details - {{ delivery.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Delivery Details #{{ delivery.id }}</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Delivery Information
+        </div>
+        <div class="card-body">
+            <p><strong>Customer Email:</strong> {{ delivery.customer_email }}</p>
+            <p><strong>Pickup Address:</strong> {{ delivery.pickup_address }}</p>
+            <p><strong>Dropoff Address:</strong> {{ delivery.dropoff_address }}</p>
+            <p><strong>Package Note:</strong> {{ delivery.package_note }}</p>
+            <p><strong>Status:</strong> {{ delivery.status }}</p>
+            <p><strong>Created On:</strong> {{ format_timestamp(delivery.timestamp) }}</p>
+            {% if delivery.assigned_driver %}
+            <p><strong>Assigned Driver:</strong> {{ delivery.assigned_driver }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if session.get('role') == 'driver' and session.get('email') == delivery.assigned_driver and delivery.status != 'Delivered' %}
+    <div class="card">
+        <div class="card-header">
+            Update Delivery Status
+        </div>
+        <div class="card-body">
+            <p>Current Status: <strong>{{ delivery.status }}</strong></p>
+            <form method="POST" action="{{ url_for('update_delivery_status', delivery_id=delivery.id) }}">
+                <div class="mb-3">
+                    <label for="new_status" class="form-label">Select New Status:</label>
+                    <select class="form-select" id="new_status" name="new_status">
+                        {% if delivery.status == 'Accepted' %}
+                            <option value="In Transit">In Transit</option>
+                        {% elif delivery.status == 'In Transit' %}
+                            <option value="Delivered">Delivered</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

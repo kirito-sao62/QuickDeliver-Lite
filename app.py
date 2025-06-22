@@ -122,7 +122,9 @@ def customer_dashboard():
     if not ('logged_in' in session and session['role'] == 'customer'):
         return redirect(url_for('login'))
     
-    return render_template('customer_dashboard.html', email=session['email'])
+    deliveries = load_deliveries()
+    customer_deliveries = [d for d in deliveries if d.get('customer_email') == session['email']]
+    return render_template('customer_dashboard.html', email=session['email'], customer_deliveries=customer_deliveries)
 
 @app.route('/driver_dashboard')
 def driver_dashboard():
@@ -220,6 +222,79 @@ def my_deliveries():
     deliveries = load_deliveries()
     driver_deliveries = [d for d in deliveries if d.get('assigned_driver') == session['email']]
     return render_template('my_deliveries.html', my_deliveries=driver_deliveries)
+
+@app.route('/delivery_details/<int:delivery_id>')
+def delivery_details(delivery_id):
+    # Ensure user is logged in
+    if 'logged_in' not in session:
+        return redirect(url_for('login'))
+
+    deliveries = load_deliveries()
+    delivery = None
+
+    # Find the delivery by ID
+    for d in deliveries:
+        if d['id'] == delivery_id:
+            delivery = d
+            break
+
+    # Handle case where delivery is not found
+    if delivery is None:
+        # Optionally, flash a message or render an error page
+        return redirect(url_for('dashboard_redirect')) # Redirect to dashboard if delivery not found
+
+    # Access control: Only the customer who created the delivery or the assigned driver can view details
+    # Also allow any driver to view pending deliveries
+    allowed_to_view = session['email'] == delivery['customer_email'] or \
+                      (session.get('role') == 'driver' and (delivery.get('assigned_driver') == session['email'] or delivery.get('status') == 'Pending'))
+    if not allowed_to_view:
+        # Optionally, flash a message indicating unauthorized access
+        return redirect(url_for('dashboard_redirect'))
+
+    return render_template('delivery_details.html', delivery=delivery)
+
+@app.route('/update_delivery_status/<int:delivery_id>', methods=['POST'])
+def update_delivery_status(delivery_id):
+    # Ensure only logged-in drivers can update status
+    if not ('logged_in' in session and session['role'] == 'driver'):
+        return redirect(url_for('login'))
+
+    new_status = request.form.get('new_status')
+
+    deliveries = load_deliveries()
+    delivery_to_update = None
+
+    # Find the delivery with the given ID
+    for delivery in deliveries:
+        if delivery['id'] == delivery_id:
+            delivery_to_update = delivery
+            break
+
+    # Handle the case where the delivery ID is not found
+    if delivery_to_update is None:
+        # Optionally, flash a message
+        return redirect(url_for('driver_dashboard'))
+
+    # Access control: Only the assigned driver can update the status
+    if delivery_to_update.get('assigned_driver') != session['email']:
+        # Optionally, flash a message indicating unauthorized access
+        return redirect(url_for('driver_dashboard'))
+
+    # Enforce valid status transitions
+    allowed_transitions = {
+        'Accepted': 'In Transit',
+        'In Transit': 'Delivered'
+    }
+
+    if delivery_to_update['status'] in allowed_transitions and allowed_transitions[delivery_to_update['status']] == new_status:
+        delivery_to_update['status'] = new_status
+        save_deliveries(deliveries)
+        # Optionally, flash a success message
+    else:
+        # Optionally, flash a message indicating invalid status transition
+        pass
+
+    return redirect(url_for('delivery_details', delivery_id=delivery_id)) # Redirect back to delivery details
 
 if __name__ == '__main__':
     app.run(debug=True)
