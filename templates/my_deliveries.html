@@ -31,7 +31,9 @@
                     <td>{{ delivery.pickup_address }}</td>
                     <td>{{ delivery.dropoff_address }}</td>
                     <td>{{ delivery.package_note }}</td>
-                    <td>{{ delivery.status }}</td>
+                    <td>
+ <span class="status-badge status-{{ delivery.status | lower | replace(' ', '-') }}"> {{ delivery.status }} </span>
+ </td>
                     <td>{{ format_timestamp(delivery.timestamp) }}</td>
                     <td>{{ delivery.assigned_driver }}</td>
                     <td>

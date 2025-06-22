@@ -29,8 +29,12 @@
                 <td>{{ delivery.dropoff_address }}</td>
                 <td>{{ delivery.package_note }}</td>
                 <td>{{ format_timestamp(delivery.timestamp) }}</td>
+                <td>
+                    <span class="status-{{ delivery.status | lower | replace(' ', '-') }}">
+                        {{ delivery.status }}
+                    </span>
+                </td> {# Add this td for status #}
                 <td> {# Show View Details link only for drivers or for the customer who created the delivery #}
-
                     {% if session.get('role') == 'driver' or (session.get('role') == 'customer' and delivery.customer_email == session.get('email')) %}
                     <a href="{{ url_for('delivery_details', delivery_id=delivery.id) }}" class="btn btn-info btn-sm">View Details</a>
                     {% endif %}

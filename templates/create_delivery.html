@@ -5,8 +5,8 @@
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
                 <div class="card-header">
                     <h2 class="text-center">Create Delivery Request</h2>
                 </div>
@@ -19,19 +19,19 @@
                         {% endif %}
                     {% endwith %}
                     <form method="POST" action="{{ url_for('create_delivery') }}">
-                        <div class="mb-3">
+                        <div class="form-group mb-3">
                             <label for="pickup_address">Pickup Address:</label>
                             <input type="text" class="form-control" id="pickup_address" name="pickup_address" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="form-group mb-3">
                             <label for="dropoff_address">Dropoff Address:</label>
                             <input type="text" class="form-control" id="dropoff_address" name="dropoff_address" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="form-group mb-3">
                             <label for="package_note">Package Note:</label>
                             <textarea class="form-control" id="package_note" name="package_note" rows="3" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Submit Request</button>
+                        <button type="submit" class="btn btn-primary w-100">Submit Request</button>
                     </form>
                 </div>
             </div>

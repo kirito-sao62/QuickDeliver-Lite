@@ -253,6 +253,70 @@ def delivery_details(delivery_id):
 
     return render_template('delivery_details.html', delivery=delivery)
 
+@app.route('/profile')
+def profile():    # Ensure user is logged in    if 'logged_in' not in session:        return redirect(url_for('login'))
+
+    deliveries = load_deliveries()
+    user_role = session['role']
+    user_email = session['email']
+    user_deliveries = []
+
+    if user_role == 'customer':
+        # Customer sees deliveries they created
+        user_deliveries = [d for d in deliveries if d.get('customer_email') == user_email]
+    elif user_role == 'driver':
+        # Driver sees deliveries they completed (status is Delivered)
+        user_deliveries = [d for d in deliveries if d.get('assigned_driver') == user_email and d.get('status') == 'Delivered']
+
+    return render_template('profile.html', user_deliveries=user_deliveries, user_role=user_role)
+
+@app.route('/submit_feedback/<int:delivery_id>', methods=['POST'])
+def submit_feedback(delivery_id):
+    # Ensure user is logged in and is a customer
+    if not ('logged_in' in session and session['role'] == 'customer'):
+        return redirect(url_for('login'))
+
+    deliveries = load_deliveries()
+    delivery_to_update = None
+
+    for delivery in deliveries:
+        if delivery['id'] == delivery_id:
+            delivery_to_update = delivery
+            break
+
+    # Access control and validation:
+    # 1. Delivery must exist
+    # 2. Logged-in customer must be the one who created the delivery
+    # 3. Delivery status must be 'Delivered'
+    # 4. Feedback hasn't been submitted already
+    if delivery_to_update is None or \
+       delivery_to_update.get('customer_email') != session['email'] or \
+       delivery_to_update.get('status') != 'Delivered' or \
+       'rating' in delivery_to_update: # Check if feedback exists
+        # Optionally, flash a message about invalid attempt
+        return redirect(url_for('customer_dashboard')) # Redirect to a safe page
+
+    try:
+        rating = int(request.form.get('rating'))
+        comment = request.form.get('comment', '').strip()[:200] # Get comment and limit length
+
+        # Validate rating
+        if not (1 <= rating <= 5):
+            # Optionally, flash a message about invalid rating
+            return redirect(url_for('delivery_details', delivery_id=delivery_id)) # Redirect back to details page
+
+        delivery_to_update['rating'] = rating
+        delivery_to_update['comment'] = comment
+        save_deliveries(deliveries)
+        # Optionally, flash a success message
+
+    except ValueError:
+        # Handle case where rating is not a valid integer
+        # Optionally, flash a message about invalid rating
+        pass # Keep the status as is, redirect below
+
+    return redirect(url_for('delivery_details', delivery_id=delivery_id)) # Redirect back to delivery details
+
 @app.route('/update_delivery_status/<int:delivery_id>', methods=['POST'])
 def update_delivery_status(delivery_id):
     # Ensure only logged-in drivers can update status

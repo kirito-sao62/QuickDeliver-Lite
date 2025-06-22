@@ -23,7 +23,7 @@
             <p><strong>Pickup Address:</strong> {{ delivery.pickup_address }}</p>
             <p><strong>Dropoff Address:</strong> {{ delivery.dropoff_address }}</p>
             <p><strong>Package Note:</strong> {{ delivery.package_note }}</p>
-            <p><strong>Status:</strong> {{ delivery.status }}</p>
+            <p><strong>Status:</strong> <span class="status-{{ delivery.status.lower().replace(' ', '-') }}">{{ delivery.status }}</span></p>
             <p><strong>Created On:</strong> {{ format_timestamp(delivery.timestamp) }}</p>
             {% if delivery.assigned_driver %}
             <p><strong>Assigned Driver:</strong> {{ delivery.assigned_driver }}</p>
@@ -53,6 +53,71 @@
             </form>
         </div>
     </div>
+    {% endif %}
+
+    {% if delivery.status == 'Delivered' %}
+        <div class="card mt-4">
+            <div class="card-header">
+                Feedback
+            </div>
+            {% if session.get('role') == 'customer' and session.get('email') == delivery.customer_email %}
+                <div class="card-body">
+                    {% if delivery.get('rating') is none %}
+                        <form method="POST" action="{{ url_for('submit_feedback', delivery_id=delivery.id) }}">
+                            <h5 class="card-title mb-3">Leave Feedback</h5>
+                            <div class="row mb-3">
+                                <p class="card-text">Please provide feedback for the driver who completed this delivery.</p>
+                            </div>
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-4">
+                                    <label for="rating" class="form-label">Rating (1-5):</label>
+                                    <select class="form-select" id="rating" name="rating" required>
+                                        <option value="">Select a rating</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment (Optional, max 200 chars):</label>
+                                <textarea class="form-control" id="comment" name="comment" rows="3" maxlength="200"></textarea>
+                            </div>
+                            <hr>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                        </form>
+                    {% else %}
+                        <p><strong>Your Rating:</strong> {{ delivery.rating }}</p>
+                        {% if delivery.get('comment') %}
+                            <p><strong>Your Comment:</strong> {{ delivery.comment }}</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+            {% elif session.get('role') == 'driver' and session.get('email') == delivery.assigned_driver %}
+                <div class="card-body">
+                    {% if delivery.get('rating') is none %}
+                        <div class="alert alert-info" role="alert">
+                            No feedback has been left for this delivery yet.
+                        </div>
+                    {% else %}
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Customer Feedback</h5>
+                                <p class="card-text mb-1"><strong>Rating:</strong> {{ delivery.rating }}</p>
+                                {% if delivery.get('comment') %}
+                                    <p class="card-text"><strong>Comment:</strong> {{ delivery.comment }}</p>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
     {% endif %}
 
 </div>
