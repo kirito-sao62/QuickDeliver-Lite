@@ -1,0 +1,47 @@
+
+{% extends "base.html" %}
+
+{% block title %}My Deliveries{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">My Accepted Deliveries</h2>
+
+    {% if my_deliveries %}
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Delivery ID</th>
+                    <th>Customer Email</th>
+                    <th>Pickup Address</th>
+                    <th>Dropoff Address</th>
+                    <th>Package Note</th>
+                    <th>Status</th>
+                    <th>Accepted On</th>
+                    <th>Assigned Driver</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for delivery in my_deliveries %}
+                <tr>
+                    <td>{{ delivery.id }}</td>
+                    <td>{{ delivery.customer_email }}</td>
+                    <td>{{ delivery.pickup_address }}</td>
+                    <td>{{ delivery.dropoff_address }}</td>
+                    <td>{{ delivery.package_note }}</td>
+                    <td>{{ delivery.status }}</td>
+                    <td>{{ format_timestamp(delivery.timestamp) }}</td>
+                    <td>{{ delivery.assigned_driver }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        You have not accepted any deliveries yet.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

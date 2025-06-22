@@ -1,15 +1,36 @@
-{% extends "templates/base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Customer Dashboard{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <h2>Welcome, {{ session['email'] }} ({{ session['role'] }})!</h2>
-            <p>This is your customer dashboard. You can view and manage your orders here.</p>
-            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        <div class="col-md-10">
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Welcome, {{ session['email'] }} ({{ session['role'] }})!</h5>
+                            <p class="card-text">This is your dedicated customer dashboard. Here you can manage your delivery requests.</p>
+                            <a href="{{ url_for('logout') }}" class="btn btn-danger mt-3">Logout</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Delivery Actions</h5>
+                            <p class="card-text">Choose an action to manage your deliveries.</p>
+                            <div class="d-grid gap-2 mt-3">
+                                <a href="{{ url_for('create_delivery') }}" class="btn btn-primary">Create New Delivery Request</a>
+                                <a href="{{ url_for('pending_deliveries') }}" class="btn btn-info">View Pending Delivery Requests</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
+</div>
