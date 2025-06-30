@@ -8,10 +8,39 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- === CSS ADDITION: FOR SMOOTH COLLAPSE ANIMATION === -->
+    <style>
+        .alert-dismissible {
+            /* Set a starting max-height larger than the alert will ever be */
+            max-height: 150px; 
+            /* Hide content that overflows during the transition */
+            overflow: hidden;
+            /* Define the transition for a smooth effect */
+            transition: max-height 0.5s ease-in-out, 
+                        padding-top 0.5s ease-in-out, 
+                        padding-bottom 0.5s ease-in-out,
+                        margin-bottom 0.5s ease-in-out,
+                        opacity 0.3s ease-in-out 0.2s; /* Delay opacity fade */
+        }
+        .alert-collapsing {
+            /* The state we animate to */
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            margin-bottom: 0;
+            opacity: 0;
+            /* We need to override bootstrap's default display property for the fade */
+            display: block !important; 
+        }
+    </style>
+    <!-- === END OF CSS ADDITION === -->
+
 </head>
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!-- Your navbar content remains the same -->
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">QuickDeliver Lite</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -59,5 +88,29 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- === JAVASCRIPT MODIFICATION: TRIGGER CSS ANIMATION === -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            
+            alerts.forEach((alert) => {
+                setTimeout(() => {
+                    // 1. Add our custom class to trigger the CSS collapse animation
+                    alert.classList.add('alert-collapsing');
+
+                    // 2. Listen for the end of the transition
+                    alert.addEventListener('transitionend', () => {
+                        // 3. Once the animation is complete, use Bootstrap's method to remove the element
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }, { once: true }); // Use { once: true } so the listener is automatically removed
+
+                }, 2000); // 5000 milliseconds = 5 seconds
+            });
+        });
+    </script>
+    <!-- === END OF JAVASCRIPT MODIFICATION === -->
+
 </body>
 </html>
