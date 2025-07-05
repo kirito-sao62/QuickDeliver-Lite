@@ -1,5 +1,6 @@
 body {
     background-color: #9d94d3;
+    color: #f8f9fa; 
 }
 
 /* Custom Status Badge Styles */
@@ -18,20 +19,58 @@ body {
 
 .status-pending {
     color: #000;
-    background-color: #ffc107; /* Bootstrap Warning */
+    background-color: #ffc107;
 }
 
 .status-accepted {
     color: #000;
-    background-color: #0dcaf0; /* Bootstrap Info */
+    background-color: #0dcaf0;
 }
 
 .status-in-transit {
     color: #fff;
-    background-color: #0d6efd; /* Bootstrap Primary */
+    background-color: #0d6efd;
 }
 
 .status-delivered {
     color: #fff;
-    background-color: #198754; /* Bootstrap Success */
+    background-color: #198754;
+}
+
+
+/* === NEW: Enhanced Form Input Styles === */
+
+/* Style for the labels above input boxes */
+.form-label {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+/* FIX: If a .form-label is inside a .card, override the color to be dark. */
+.card .form-label {
+    color: #212529; 
+}
+
+/* Base style for all input boxes, textareas, and select dropdowns */
+.form-control,
+.form-select {
+    color: #212529;
+    background-color: #f1f3f5;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.form-control::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}
+
+.form-control:focus,
+.form-select:focus {
+    color: #212529;
+    background-color: #ffffff;
+    border-color: #ab8ce4;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(113, 85, 201, 0.4); 
 }

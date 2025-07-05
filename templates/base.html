@@ -54,6 +54,9 @@
                         <span class="nav-link">Welcome, {{ session['email'] }}</span>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard_redirect') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
                     </li>
                     <li class="nav-item">
